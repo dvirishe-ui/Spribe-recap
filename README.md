@@ -12,6 +12,8 @@ npm test           # arithmetic / data-derivation tests
 npm run build && npm run preview   # production build
 ```
 
+The operator pilot (`/pilot.html`) has two tabs: the Player Replay inside the fictional Northstar site, and a Partner Replay — a celebratory end-of-year story for five fictional partner sites (Zambia, Tanzania, Malawi, Kenya, Ghana) with market-average comparisons and an "All the numbers" table. Data: `src/partnerData.js`. Build a single shareable file with `npm run build:pilot`.
+
 Handy URL params: `?scenario=high-loss`, `?motion=reduce` (or `full`), `?view=activity`.
 The same options are in the **Demo controls** button at the bottom of the screen (developer-only).
 

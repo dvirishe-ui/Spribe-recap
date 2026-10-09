@@ -1,6 +1,8 @@
 import { useLayoutEffect, useMemo, useState } from 'react';
 import Story, { NorthstarMark } from '../components/Story.jsx';
-import Insights from './Insights.jsx';
+import PartnerStory, { PARTNER_SLIDES } from './PartnerStory.jsx';
+import PartnerNumbers from './PartnerNumbers.jsx';
+import { PARTNER_SITES, derivePartner } from '../partnerData.js';
 import Activity from '../components/Activity.jsx';
 import GameArt from '../components/GameArt.jsx';
 import { REPLAY_DATA, RESTRAINED_MODE_LOSS_THRESHOLD, deriveReplay, formatMoney } from '../data.js';
@@ -138,7 +140,15 @@ function Lobby({ replay, onOpen, compact }) {
 }
 
 export default function Pilot() {
-  const [tab, setTab] = useState('player'); // player | insights
+  const [tab, setTab] = useState('player'); // player | partner
+  const [siteId, setSiteId] = useState(PARTNER_SITES[0].id);
+  const [partnerScreen, setPartnerScreen] = useState('story'); // story | numbers
+  const [partnerStart, setPartnerStart] = useState({ slide: 0, n: 0 });
+  const partner = useMemo(() => derivePartner(PARTNER_SITES.find((x) => x.id === siteId)), [siteId]);
+  const openPartner = (slide) => {
+    setPartnerStart((st) => ({ slide, n: st.n + 1 }));
+    setPartnerScreen('story');
+  };
   const [scenario, setScenario] = useState('normal');
   const [device, setDevice] = useState(() => (window.innerWidth < 900 ? 'mobile' : 'desktop'));
   const [motion, setMotion] = useState('system');
@@ -197,19 +207,37 @@ export default function Pilot() {
       <header className="pilot-bar">
         <div className="pilot-bar__title">
           <strong>SPRIBE Replay {replay.year}</strong>
-          <span>Operator pilot · Northstar Casino</span>
+          <span>{tab === 'partner' ? 'Partner pilot · 5 fictional sites' : 'Operator pilot · Northstar Casino'}</span>
         </div>
         <div className="pilot-tabs" role="tablist" aria-label="Pilot views">
           {[
-            ['player', 'Player experience'],
-            ['insights', 'Operator insights'],
+            ['player', 'Player Replay'],
+            ['partner', 'Partner Replay'],
           ].map(([v, l]) => (
             <button key={v} type="button" role="tab" aria-selected={tab === v} className={tab === v ? 'is-on' : ''} onClick={() => setTab(v)}>
               {l}
             </button>
           ))}
         </div>
-        <div className="pilot-bar__controls" hidden={tab !== 'player'}>
+        <div className="pilot-bar__controls">
+          {tab === 'partner' && (
+            <label className="seg site-pick">
+              <span className="seg__label">Site</span>
+              <select
+                value={siteId}
+                onChange={(e) => {
+                  setSiteId(e.target.value);
+                  openPartner(0);
+                }}
+              >
+                {PARTNER_SITES.map((x) => (
+                  <option key={x.id} value={x.id}>
+                    {x.name} · {x.country}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <Segmented
             id="device"
             label="Preview"
@@ -220,6 +248,7 @@ export default function Pilot() {
               { value: 'mobile', label: 'Mobile' },
             ]}
           />
+          {tab === 'player' && (
           <Segmented
             id="scenario"
             label="Player"
@@ -233,6 +262,7 @@ export default function Pilot() {
               { value: 'highLoss', label: 'High-loss' },
             ]}
           />
+          )}
           <Segmented
             id="motion"
             label="Motion"
@@ -246,7 +276,121 @@ export default function Pilot() {
         </div>
       </header>
 
-      {tab === 'insights' && <Insights />}
+      <div className="pilot-body" hidden={tab !== 'partner'}>
+        <section className="stage" aria-label="Partner Replay preview">
+          <div className={`device device--${device}`}>
+            {device === 'desktop' ? (
+              <div className="device__chrome" aria-hidden="true">
+                <span className="dots">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <span className="url">partner-hub.example/replay-2026/{partner.site.id}</span>
+              </div>
+            ) : (
+              <div className="device__notch" aria-hidden="true" />
+            )}
+            <div className="device__screen">
+              <div className="replay-root">
+                {partnerScreen === 'numbers' ? (
+                  <PartnerNumbers p={partner} onBack={() => openPartner(PARTNER_SLIDES.length - 1)} />
+                ) : (
+                  <PartnerStory
+                    key={`${siteId}-${partnerStart.n}`}
+                    p={partner}
+                    reducedMotion={reducedMotion}
+                    initialSlide={partnerStart.slide}
+                    onNumbers={() => setPartnerScreen('numbers')}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+          <p className="stage__caption">What a partner&rsquo;s team sees at the end of the year. Click through it, or pick another site above.</p>
+        </section>
+
+        <aside className="brief" aria-label="Partner site profile">
+          <div className="brief__head">
+            <p className="brief__kicker">Partner Replay · site profile</p>
+            <h1>{partner.site.name}</h1>
+            <p className="brief__lede">
+              A fictional SPRIBE partner in {partner.site.city}, {partner.site.country}. Every figure is invented and calibrated to
+              typical Aviator traffic.
+            </p>
+          </div>
+
+          <section className="brief__block">
+            <h2>At a glance</h2>
+            <dl className="kv">
+              <div>
+                <dt>Country</dt>
+                <dd>
+                  {partner.site.cc} · {partner.site.country}
+                </dd>
+              </div>
+              <div>
+                <dt>SPRIBE partner since</dt>
+                <dd>{partner.site.spribeSince}</dd>
+              </div>
+              <div>
+                <dt>Players in 2026</dt>
+                <dd>{partner.site.uniquePlayers[2026].toLocaleString('en-US')}</dd>
+              </div>
+              <div>
+                <dt>GGR in 2026</dt>
+                <dd>${(partner.y26.ggr / 1e6).toFixed(2)}M</dd>
+              </div>
+              <div>
+                <dt>Personality</dt>
+                <dd>{partner.personality.title}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section className="brief__block">
+            <h2>{partner.site.country} market</h2>
+            <dl className="kv">
+              <div>
+                <dt>SPRIBE operators</dt>
+                <dd>{partner.market.operators}</dd>
+              </div>
+              <div>
+                <dt>Avg monthly players / operator</dt>
+                <dd>{partner.market.mau.toLocaleString('en-US')}</dd>
+              </div>
+              <div>
+                <dt>Avg GGR / operator</dt>
+                <dd>${(partner.market.ggr / 1e6).toFixed(2)}M</dd>
+              </div>
+              <div>
+                <dt>Market GGR growth</dt>
+                <dd>+{partner.market.ggrGrowth}%</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section className="brief__block">
+            <h2>Chapters</h2>
+            <ol className="chapters">
+              {PARTNER_SLIDES.map((c, i) => (
+                <li key={c.id}>
+                  <button type="button" onClick={() => openPartner(i)}>
+                    <span className="chapters__n">{i + 1}</span>
+                    {c.label}
+                  </button>
+                </li>
+              ))}
+              <li>
+                <button type="button" onClick={() => setPartnerScreen('numbers')}>
+                  <span className="chapters__n">+</span>
+                  All the numbers
+                </button>
+              </li>
+            </ol>
+          </section>
+        </aside>
+      </div>
 
       <div className="pilot-body" hidden={tab !== 'player'}>
         <section className="stage" aria-label="Player view preview">

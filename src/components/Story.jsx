@@ -298,7 +298,13 @@ const SLIDES = [
   { id: 'closing', label: 'Closing', C: Closing },
 ];
 
-export default function Story({ replay, reducedMotion, onViewActivity, onClose, initialSlide = 0 }) {
+/**
+ * Generic story shell: progress bar, back/next, replay, keyboard + swipe.
+ * `slides` = [{ id, label, C }]; each C receives `ctx` props plus onNext/onReplay.
+ */
+export function StoryShell({ slides, ctx, brand, reducedMotion, onClose, initialSlide = 0, closeLabel = 'Close Replay' }) {
+  const SLIDES = slides;
+  const rootRef = useRef(null);
   const [index, setIndex] = useState(initialSlide);
   const [dir, setDir] = useState('fwd');
   const [runId, setRunId] = useState(0);
@@ -325,6 +331,8 @@ export default function Story({ replay, reducedMotion, onViewActivity, onClose, 
   useEffect(() => {
     const onKey = (e) => {
       if (document.querySelector('[aria-modal="true"]')) return;
+      // Ignore keys while this story is hidden (e.g. another pilot tab is open).
+      if (!rootRef.current || rootRef.current.offsetParent === null) return;
       if (e.altKey || e.ctrlKey || e.metaKey) return;
       const tag = e.target?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
@@ -353,7 +361,7 @@ export default function Story({ replay, reducedMotion, onViewActivity, onClose, 
   const { C, label, id } = SLIDES[index];
 
   return (
-    <div className={`story story--${id}${onClose ? ' story--closable' : ''}`}>
+    <div ref={rootRef} className={`story story--${id}${onClose ? ' story--closable' : ''}`}>
       <Sky reducedMotion={reducedMotion} />
       <div className="story__glow" aria-hidden="true" />
 
@@ -373,15 +381,12 @@ export default function Story({ replay, reducedMotion, onViewActivity, onClose, 
           ))}
         </div>
         <div className="story__brandbar">
-          <NorthstarMark />
-          <span className="story__brand-sep" aria-hidden="true">·</span>
-          <span className="story__product">SPRIBE Replay {replay.year}</span>
-          <DemoPill />
+          {brand}
           <button type="button" className="icon-btn story__replay" onClick={restart} aria-label="Replay story from the start" title="Replay story">
             <ReplayIcon />
           </button>
           {onClose && (
-            <button type="button" className="icon-btn" onClick={onClose} aria-label="Close Replay" title="Close Replay">
+            <button type="button" className="icon-btn" onClick={onClose} aria-label={closeLabel} title={closeLabel}>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
             </button>
           )}
@@ -395,7 +400,7 @@ export default function Story({ replay, reducedMotion, onViewActivity, onClose, 
           aria-roledescription="slide"
           aria-label={`${index + 1} of ${SLIDES.length}: ${label}`}
         >
-          <C replay={replay} onNext={next} onReplay={restart} onViewActivity={onViewActivity} />
+          <C {...ctx} onNext={next} onReplay={restart} />
         </section>
       </main>
 
@@ -424,9 +429,29 @@ export default function Story({ replay, reducedMotion, onViewActivity, onClose, 
   );
 }
 
+export default function Story({ replay, reducedMotion, onViewActivity, onClose, initialSlide = 0 }) {
+  return (
+    <StoryShell
+      slides={SLIDES}
+      ctx={{ replay, onViewActivity }}
+      reducedMotion={reducedMotion}
+      onClose={onClose}
+      initialSlide={initialSlide}
+      brand={
+        <>
+          <NorthstarMark />
+          <span className="story__brand-sep" aria-hidden="true">·</span>
+          <span className="story__product">SPRIBE Replay {replay.year}</span>
+          <DemoPill />
+        </>
+      }
+    />
+  );
+}
+
 /* ---------- Icons ---------- */
 
-function Arrow({ flip }) {
+export function Arrow({ flip }) {
   return (
     <svg viewBox="0 0 24 24" className="ico" style={flip ? { transform: 'scaleX(-1)' } : undefined} aria-hidden="true">
       <path d="M5 12h14M13 6l6 6-6 6" />
