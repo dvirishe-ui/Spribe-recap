@@ -57,6 +57,18 @@ button {
   border-radius: 8px;
 }
 
+/* The Replay renders inside .replay-root. Layout responds to this container's
+   width (not the window), so it also works inside the operator pilot's
+   device frames. */
+#root {
+  height: 100vh;
+  height: 100dvh;
+}
+.replay-root {
+  container: replay / inline-size;
+  height: 100%;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -84,8 +96,7 @@ button {
 
 .story {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
+  height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
@@ -148,7 +159,7 @@ button {
 }
 
 .story__top {
-  padding: max(14px, env(safe-area-inset-top)) clamp(16px, 4vw, 40px) 0;
+  padding: max(14px, env(safe-area-inset-top)) clamp(16px, 4cqi, 40px) 0;
   display: grid;
   gap: 12px;
   z-index: 2;
@@ -274,7 +285,7 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px clamp(16px, 4vw, 40px);
+  padding: 12px clamp(16px, 4cqi, 40px);
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
@@ -329,7 +340,7 @@ button {
   align-items: center;
   gap: 28px;
 }
-@media (min-width: 800px) {
+@container replay (min-width: 800px) {
   .slide-inner--split {
     grid-template-columns: 1.05fr 1fr;
     gap: 48px;
@@ -356,7 +367,7 @@ button {
   margin: 0;
   font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(18px, 2.4vw, 24px);
+  font-size: clamp(18px, 2.4cqi, 24px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -374,7 +385,7 @@ button {
   margin: 0;
   font-family: var(--display);
   font-weight: 850;
-  font-size: clamp(48px, 11vw, 120px);
+  font-size: clamp(48px, 11cqi, 120px);
   line-height: 0.92;
   letter-spacing: -0.045em;
 }
@@ -387,14 +398,14 @@ button {
   color: transparent;
 }
 .display--md {
-  font-size: clamp(40px, 8.5vw, 92px);
+  font-size: clamp(40px, 8.5cqi, 92px);
 }
 
 .headline {
   margin: 0;
   font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(30px, 5.6vw, 58px);
+  font-size: clamp(30px, 5.6cqi, 58px);
   line-height: 1.02;
   letter-spacing: -0.035em;
   max-width: 18ch;
@@ -407,7 +418,7 @@ button {
 .lede {
   margin: 0;
   max-width: 46ch;
-  font-size: clamp(16px, 1.8vw, 19px);
+  font-size: clamp(16px, 1.8cqi, 19px);
   line-height: 1.5;
   color: var(--muted);
 }
@@ -492,7 +503,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px clamp(16px, 4vw, 40px) max(40px, calc(env(safe-area-inset-bottom) + 30px));
+  padding: 10px clamp(16px, 4cqi, 40px) max(40px, calc(env(safe-area-inset-bottom) + 30px));
   z-index: 2;
 }
 .nav-btn {
@@ -622,7 +633,7 @@ button {
 .stat__num {
   font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(30px, 4.6vw, 44px);
+  font-size: clamp(30px, 4.6cqi, 44px);
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
@@ -640,12 +651,12 @@ button {
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
-@media (min-width: 640px) {
+@container replay (min-width: 640px) {
   .lineup {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-@media (min-width: 900px) {
+@container replay (min-width: 900px) {
   .lineup {
     grid-template-columns: repeat(5, 1fr);
   }
@@ -653,7 +664,7 @@ button {
 .lineup li:last-child:nth-child(odd) {
   grid-column: span 2;
 }
-@media (min-width: 640px) {
+@container replay (min-width: 640px) {
   .lineup li:last-child:nth-child(odd) {
     grid-column: auto;
   }
@@ -852,7 +863,7 @@ button {
   background: linear-gradient(90deg, rgba(26, 32, 99, 0.75), rgba(16, 21, 74, 0.45));
   border: 1px solid var(--line);
 }
-@media (min-width: 720px) {
+@container replay (min-width: 720px) {
   .compare__row {
     grid-template-columns: 1.1fr 1.6fr auto;
     grid-template-areas: 'label vals change';
@@ -881,11 +892,11 @@ button {
   color: var(--muted);
 }
 .compare__from {
-  font-size: clamp(24px, 3.6vw, 34px);
+  font-size: clamp(24px, 3.6cqi, 34px);
   color: rgba(244, 242, 255, 0.6);
 }
 .compare__to {
-  font-size: clamp(30px, 4.6vw, 44px);
+  font-size: clamp(30px, 4.6cqi, 44px);
 }
 .compare__arrow {
   font-size: 22px;
@@ -954,7 +965,7 @@ button {
   margin: 4px 0 8px;
   font-family: var(--display);
   font-weight: 850;
-  font-size: clamp(40px, 9vw, 56px);
+  font-size: clamp(40px, 9cqi, 56px);
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -1094,7 +1105,7 @@ button {
 }
 .dialog {
   width: min(100%, 460px);
-  max-height: calc(100dvh - 32px);
+  max-height: 100%;
   overflow: auto;
   border-radius: 24px;
   padding: 20px;
@@ -1161,8 +1172,7 @@ button {
    Private statement (calm, no motion)
    ========================================================================== */
 .statement {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100%;
   background: #f3f4f7;
   color: #1d2233;
   color-scheme: light;
@@ -1205,7 +1215,7 @@ button {
 }
 .statement__title {
   margin: 8px 0 0;
-  font-size: clamp(26px, 5vw, 34px);
+  font-size: clamp(26px, 5cqi, 34px);
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -1227,7 +1237,7 @@ button {
   display: grid;
   gap: 14px;
 }
-@media (min-width: 680px) {
+@container replay (min-width: 680px) {
   .stmt-years {
     grid-template-columns: 1fr 1fr;
   }
@@ -1405,7 +1415,7 @@ button {
   font-family: var(--body);
   max-width: calc(100vw - 24px);
 }
-.statement ~ .demo-controls {
+.replay-root:has(.statement) ~ .demo-controls {
   right: 12px;
   transform: none;
   bottom: 12px;
@@ -1516,7 +1526,7 @@ button {
 }
 
 /* ---------- Small screens ---------- */
-@media (max-width: 520px) {
+@container replay (max-width: 520px) {
   .story__brand-sep,
   .story__product {
     display: none;
@@ -1525,7 +1535,7 @@ button {
     display: inline;
   }
   .display {
-    font-size: clamp(46px, 15vw, 64px);
+    font-size: clamp(46px, 15cqi, 64px);
   }
   .game-card {
     padding: 12px;
@@ -1538,7 +1548,7 @@ button {
     height: 64px;
   }
   .display--md {
-    font-size: clamp(38px, 12vw, 56px);
+    font-size: clamp(38px, 12cqi, 56px);
   }
   .disc-card {
     padding: 18px 14px 16px;
@@ -1561,6 +1571,14 @@ button {
   }
   .disc-card .tag {
     font-size: 9px;
+  }
+}
+
+/* Embedded with a close button (operator site): the host already shows the
+   operator brand, so drop it from the top bar on narrow screens. */
+@container replay (max-width: 440px) {
+  .story--closable .story__brandbar .northstar {
+    display: none;
   }
 }
 

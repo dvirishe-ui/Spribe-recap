@@ -298,7 +298,7 @@ const SLIDES = [
   { id: 'closing', label: 'Closing', C: Closing },
 ];
 
-export default function Story({ replay, reducedMotion, onViewActivity, initialSlide = 0 }) {
+export default function Story({ replay, reducedMotion, onViewActivity, onClose, initialSlide = 0 }) {
   const [index, setIndex] = useState(initialSlide);
   const [dir, setDir] = useState('fwd');
   const [runId, setRunId] = useState(0);
@@ -353,7 +353,7 @@ export default function Story({ replay, reducedMotion, onViewActivity, initialSl
   const { C, label, id } = SLIDES[index];
 
   return (
-    <div className={`story story--${id}`}>
+    <div className={`story story--${id}${onClose ? ' story--closable' : ''}`}>
       <Sky reducedMotion={reducedMotion} />
       <div className="story__glow" aria-hidden="true" />
 
@@ -380,6 +380,11 @@ export default function Story({ replay, reducedMotion, onViewActivity, initialSl
           <button type="button" className="icon-btn story__replay" onClick={restart} aria-label="Replay story from the start" title="Replay story">
             <ReplayIcon />
           </button>
+          {onClose && (
+            <button type="button" className="icon-btn" onClick={onClose} aria-label="Close Replay" title="Close Replay">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+          )}
         </div>
       </header>
 

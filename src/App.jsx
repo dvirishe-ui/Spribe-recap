@@ -60,7 +60,7 @@ export default function App() {
 
   return (
     <>
-      {content}
+      <div className="replay-root">{content}</div>
       <DemoControls scenario={scenario} onScenario={setScenario} motion={motion} onMotion={setMotion} />
     </>
   );

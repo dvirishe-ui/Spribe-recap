@@ -133,7 +133,7 @@ const DEMO_DIALOGS = {
   },
 };
 
-export default function Activity({ replay, onBack, variant = 'normal' }) {
+export default function Activity({ replay, onBack, onClose, variant = 'normal' }) {
   const [dialog, setDialog] = useState(null);
   const restrained = variant === 'restrained';
   const op = replay.operator.name;
@@ -160,6 +160,11 @@ export default function Activity({ replay, onBack, variant = 'normal' }) {
           {onBack && (
             <button type="button" className="btn-calm btn-calm--link" onClick={onBack}>
               ← Back to Replay
+            </button>
+          )}
+          {onClose && !onBack && (
+            <button type="button" className="btn-calm btn-calm--link" onClick={onClose}>
+              Close
             </button>
           )}
         </header>

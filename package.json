@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:pilot": "node scripts/build-pilot.mjs"
   },
   "dependencies": {
     "react": "^19.1.0",

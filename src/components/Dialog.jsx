@@ -6,7 +6,9 @@ import { useFocusTrap } from '../hooks.js';
 export default function Dialog({ title, children, onClose, tone = 'story', footer }) {
   const ref = useFocusTrap(onClose);
   const titleId = useId();
-  // Portal to <body> so animated (transformed) slides can't clip the overlay.
+  // Portal out of the animated (transformed) slides so they can't clip the overlay.
+  // A host page (e.g. the operator pilot's device frame) can mark its own root.
+  const target = document.querySelector('[data-portal-root]') || document.body;
   return createPortal(
     <div className={`dialog-backdrop dialog-backdrop--${tone}`} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div ref={ref} className={`dialog dialog--${tone}`} role="dialog" aria-modal="true" aria-labelledby={titleId}>
@@ -25,6 +27,6 @@ export default function Dialog({ title, children, onClose, tone = 'story', foote
         </div>
       </div>
     </div>,
-    document.body,
+    target,
   );
 }
