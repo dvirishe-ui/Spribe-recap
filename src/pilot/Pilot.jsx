@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo, useState } from 'react';
 import Story, { NorthstarMark } from '../components/Story.jsx';
+import Insights from './Insights.jsx';
 import Activity from '../components/Activity.jsx';
 import GameArt from '../components/GameArt.jsx';
 import { REPLAY_DATA, RESTRAINED_MODE_LOSS_THRESHOLD, deriveReplay, formatMoney } from '../data.js';
@@ -137,6 +138,7 @@ function Lobby({ replay, onOpen, compact }) {
 }
 
 export default function Pilot() {
+  const [tab, setTab] = useState('player'); // player | insights
   const [scenario, setScenario] = useState('normal');
   const [device, setDevice] = useState(() => (window.innerWidth < 900 ? 'mobile' : 'desktop'));
   const [motion, setMotion] = useState('system');
@@ -197,7 +199,17 @@ export default function Pilot() {
           <strong>SPRIBE Replay {replay.year}</strong>
           <span>Operator pilot · Northstar Casino</span>
         </div>
-        <div className="pilot-bar__controls">
+        <div className="pilot-tabs" role="tablist" aria-label="Pilot views">
+          {[
+            ['player', 'Player experience'],
+            ['insights', 'Operator insights'],
+          ].map(([v, l]) => (
+            <button key={v} type="button" role="tab" aria-selected={tab === v} className={tab === v ? 'is-on' : ''} onClick={() => setTab(v)}>
+              {l}
+            </button>
+          ))}
+        </div>
+        <div className="pilot-bar__controls" hidden={tab !== 'player'}>
           <Segmented
             id="device"
             label="Preview"
@@ -234,7 +246,9 @@ export default function Pilot() {
         </div>
       </header>
 
-      <div className="pilot-body">
+      {tab === 'insights' && <Insights />}
+
+      <div className="pilot-body" hidden={tab !== 'player'}>
         <section className="stage" aria-label="Player view preview">
           <div className={`device device--${device}`}>
             {device === 'desktop' ? (
